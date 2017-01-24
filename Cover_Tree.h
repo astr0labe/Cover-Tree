@@ -270,7 +270,15 @@ bool CoverTree<Point>::insert_rec(const Point& p,
     typename  std::vector<std::pair<double, CoverTreeNode*> >::const_iterator it;
     for(it=Qi.begin(); it!=Qi.end(); ++it) {
         if(it->first<minQiDist.first) minQiDist = *it;
-        if(it->first<minDist) minDist=it->first;
+        if(it->first<minDist)
+        {
+            minDist=it->first;
+            if (minDist == 0.0)
+            {
+                it->second->addPoint(p);
+                return false;
+            }
+        }
         if(it->first<=sep) Qj.push_back(*it);
         std::vector<CoverTreeNode*> children = it->second->getChildren(level);
         typename std::vector<CoverTreeNode*>::const_iterator it2;
@@ -435,19 +443,10 @@ void CoverTree<Point>::insert(const Point& newPoint)
         _numNodes=1;
         return;
     }
-    //TODO: this is pretty inefficient, there may be a better way
-    //to check if the node already exists...
-    CoverTreeNode* n = kNearestNodes(newPoint,1)[0];
-    if(newPoint.distance(n->getPoint())==0.0) {
-        n->addPoint(newPoint);
-    } else {
-        //insert_rec acts under the assumption that there are no nodes with
-        //distance 0 to newPoint in the cover tree (the previous lines check it)
-        insert_rec(newPoint,
-                   std::vector<distNodePair>
-                   (1,std::make_pair(_root->distance(newPoint),_root)),
-                   _maxLevel);
-    }
+    insert_rec(newPoint,
+                std::vector<distNodePair>
+                (1,std::make_pair(_root->distance(newPoint),_root)),
+                _maxLevel);
 }
 
 template<class Point>
