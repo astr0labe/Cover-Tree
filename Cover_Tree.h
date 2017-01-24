@@ -117,7 +117,7 @@ class CoverTree
                     bool& multi);
 
  public:
-    static const double base = 2.0;
+    static const double base;
 
     /**
      * Constructs a cover tree which begins with all points in points.
@@ -171,6 +171,9 @@ class CoverTree
      */
     void print() const;
 }; // CoverTree class
+
+template<class Point>
+const double CoverTree<Point>::base = 2.0;
 
 template<class Point>
 CoverTree<Point>::CoverTree(const double& maxDist,
@@ -263,7 +266,7 @@ bool CoverTree<Point>::insert_rec(const Point& p,
     std::vector<std::pair<double, CoverTreeNode*> > Qj;
     double sep = pow(base,level);
     double minDist = DBL_MAX;
-    std::pair<double,CoverTreeNode*> minQiDist(DBL_MAX,NULL);
+    std::pair<double,CoverTreeNode*> minQiDist(DBL_MAX,(CoverTreeNode*)NULL);
     typename  std::vector<std::pair<double, CoverTreeNode*> >::const_iterator it;
     for(it=Qi.begin(); it!=Qi.end(); ++it) {
         if(it->first<minQiDist.first) minQiDist = *it;
